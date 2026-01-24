@@ -2,7 +2,8 @@
 #include <vector>
 #include <string>
 #include <limits>
-#include <sstream> 
+#include <sstream> // Them thu vien nay de xu ly stringstream
+
 #include "Utils.h"
 #include "CSVHelper.h"
 
@@ -42,7 +43,7 @@ void showLecturerMenu() {
     cout << "2. Search / Filter classes\n";
     cout << "3. View student list in a class\n";
     cout << "4. Create attendance session\n";
-    cout << "5. Take manual attendance (View Missing Students)\n"; 
+    cout << "5. Take manual attendance (View Missing Students)\n"; // Cap nhat ten menu
     cout << "6. Review and edit attendance\n";
     cout << "7. View attendance history\n";
     cout << "8. Delete attendance session\n";
