@@ -1,106 +1,56 @@
-#include "CSVHelper.h"
+#ifndef CSVHELPER_H
+#define CSVHELPER_H
 
-// ==================== 1. ĐỌC FILE CSV ====================
-vector<vector<string>> CSVHelper::docFile(string tenFile) {
-    vector<vector<string>> duLieu;
-    ifstream file(tenFile);
+#include <string>
+#include <vector>
+#include <fstream>
+#include <sstream>
 
-    if (!file.is_open()) {
-        return duLieu;
-    }
+using namespace std;
 
-    string dong;
-    while (getline(file, dong)) {
-        vector<string> cacCot = tachDong(dong);
-        duLieu.push_back(cacCot);
-    }
+class CSVHelper {
+public:
+    // Ham moi them de lay lich hoc
+    static string getClassSchedule(const string& classId);
 
-    file.close();
-    return duLieu;
-}
+    // ===== 1. DOC & GHI FILE =====
+    static vector<vector<string>> docFile(const string& tenFile);
+    static void ghiFile(const string& tenFile, const vector<vector<string>>& duLieu);
+    static string getStudentNameById(const string& studentId);
 
-// ==================== 2. GHI FILE CSV ====================
-void CSVHelper::ghiFile(string tenFile, vector<vector<string>> duLieu) {
-    ofstream file(tenFile);
+    // ===== 2. CAP NHAT DONG =====
+    static void capNhatDong(const string& tenFile, int viTri, const vector<string>& dongMoi);
 
-    if (!file.is_open()) {
-        return;
-    }
+    // ===== 3. TIM KIEM =====
+    static vector<vector<string>> timKiem(const string& tenFile, int cotCanTim, const string& giaTri);
+    static int timViTri(const string& tenFile, int cotCanTim, const string& giaTri);
 
-    for (int i = 0; i < duLieu.size(); i++) {
-        file << ghepDong(duLieu[i]);
-        if (i != duLieu.size() - 1) {
-            file << endl;
-        }
-    }
+    // ===== 4. ATTENDANCE SESSION FUNCTIONS =====
+    static bool hasOpenSession(const string& classId);
+    static void addAttendanceSession(const string& classId, const string& startTime,
+        const string& endTime, const string& password);
+    static void updateAttendanceSession(const string& classId, const string& startTime,
+        const string& endTime, const string& password,
+        const vector<string>& presentStudents);
+    static vector<string> getPresentStudentsOfSession(const string& classId, const string& startTime);
+    static string getSessionEndTime(const string& classId, const string& startTime);
+    static bool removeAttendanceSession(const string& classId, const string& startTime);
+    static void updateStudentAttendanceCount(const string& classId, const string& studentId, int delta);
 
-    file.close();
-}
+    // ===== 5. STUDENT/LECTURER LOOKUP =====
+    static class Student* findStudentByEmailAndPassword(const string& email, const string& password);
+    static class Lecturer* findLecturerByEmailAndPassword(const string& email, const string& password);
 
-// ==================== 3. CAP NHAP DONG ====================
-void CSVHelper::capNhatDong(string tenFile, int viTri, vector<string> dongMoi) {
-    vector<vector<string>> duLieu = docFile(tenFile);
+    // ===== 6. CLASS INFO =====
+    static vector<string> getClassInfo(const string& classId);
+    static vector<string> getActiveSession(const string& classId);
+    static bool hasStudentAttended(const string& classId, const string& studentId);
+    static bool markAttendance(const string& classId, const string& studentId);
+    static vector<vector<string>> getAllSessions(const string& classId);
 
-    if (viTri < 0 || viTri >= duLieu.size()) {
-        return;
-    }
+    // ===== 7. HAM PHU TRO =====
+    static vector<string> tachDong(const string& dong);
+    static string ghepDong(const vector<string>& cot);
+};
 
-    duLieu[viTri] = dongMoi;
-    ghiFile(tenFile, duLieu);
-}
-
-// ==================== 4. TIM KIEM ====================
-vector<vector<string>> CSVHelper::timKiem(string tenFile, int cotCanTim, string giaTri) {
-    vector<vector<string>> ketQua;
-    vector<vector<string>> duLieu = docFile(tenFile);
-
-    for (int i = 0; i < duLieu.size(); i++) {
-        if (cotCanTim < duLieu[i].size()) {
-            if (duLieu[i][cotCanTim] == giaTri) {
-                ketQua.push_back(duLieu[i]);
-            }
-        }
-    }
-
-    return ketQua;
-}
-
-int CSVHelper::timViTri(string tenFile, int cotCanTim, string giaTri) {
-    vector<vector<string>> duLieu = docFile(tenFile);
-
-    for (int i = 0; i < duLieu.size(); i++) {
-        if (cotCanTim < duLieu[i].size()) {
-            if (duLieu[i][cotCanTim] == giaTri) {
-                return i;
-            }
-        }
-    }
-
-    return -1;
-}
-
-// ==================== HAM PHU TRO ====================
-vector<string> CSVHelper::tachDong(string dong) {
-    vector<string> ketQua;
-    string tam;
-    stringstream ss(dong);
-
-    while (getline(ss, tam, ';')) {
-        ketQua.push_back(tam);
-    }
-
-    return ketQua;
-}
-
-string CSVHelper::ghepDong(vector<string> cot) {
-    string dong = "";
-
-    for (int i = 0; i < cot.size(); i++) {
-        dong += cot[i];
-        if (i != cot.size() - 1) {
-            dong += ";";
-        }
-    }
-
-    return dong;
-}
+#endif
